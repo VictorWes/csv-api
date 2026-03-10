@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.csv</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>csv</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>csv</name>
 	<description>Projeto para controle de estoques e vendas</description>
@@ -91,6 +91,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>4.4.0</version>
 		</dependency>
 	</dependencies>
 
