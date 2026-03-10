@@ -1,6 +1,6 @@
 package com.csv.enums;
 
-public enum TiposBasePagamentoEnum {
+public enum TipoBasePagamentoEnum {
     DINHEIRO,
     PIX,
     DEBITO,

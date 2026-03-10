@@ -1,4 +1,6 @@
 package com.csv.enums;
 
-public class TipoOperacaoEnum {
+public enum TipoOperacaoEnum {
+    ENTRADA,
+    SAIDA
 }
