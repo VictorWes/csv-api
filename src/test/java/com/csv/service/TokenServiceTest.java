@@ -26,7 +26,7 @@ class TokenServiceTest {
     private TokenService tokenService;
 
     private Usuario usuario;
-    private final String secret = "test-secret"; // Segredo de teste
+    private final String secret = "test-secret";
 
     @BeforeEach
     void setUp() {
