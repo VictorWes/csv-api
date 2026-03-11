@@ -14,7 +14,7 @@ public class CryptoConverter implements AttributeConverter<String, String> {
 
     private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
 
-    private static final byte[] KEY = "MinhaChaveSecretaDe16Bytes!!".getBytes();
+    private static final byte[] KEY = "12345678901234567890123456789012".getBytes();
 
     @Override
     public String convertToDatabaseColumn(String dadoSensiveis) {
