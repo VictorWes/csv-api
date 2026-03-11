@@ -2,6 +2,8 @@ package com.csv.service;
 
 import com.csv.controller.request.UsuarioRequest;
 import com.csv.controller.response.UsuarioResponse;
+import com.csv.infra.exception.RecursoNaoEncontradoException;
+import com.csv.infra.exception.RegraNegocioException;
 import com.csv.mapper.UsuarioMapper;
 import com.csv.repository.EmpresaRepository;
 import com.csv.repository.UsuarioRepository;
@@ -27,11 +29,11 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponse criarUsuario(UsuarioRequest request) {
         if (usuarioRepository.findByEmail(request.email()).isPresent()) {
-            throw new RuntimeException("Já existe um usuário cadastrado com este e-mail.");
+            throw new RegraNegocioException("Já existe um usuário cadastrado com este e-mail.");
         }
 
         var empresa = empresaRepository.findById(request.empresaId())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada pelo ID informado."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Empresa não encontrada pelo ID informado."));
 
         var usuario = usuarioMapper.toEntity(request, empresa);
         usuario.setSenha(passwordEncoder.encode(request.senha()));
