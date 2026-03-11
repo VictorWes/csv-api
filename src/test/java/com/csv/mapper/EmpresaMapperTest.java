@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EmpresaMapperTest {
 
-    // O nosso ator principal, sem depender de dublês (Mocks)
     private EmpresaMapper empresaMapper;
 
     @BeforeEach
@@ -24,16 +23,16 @@ class EmpresaMapperTest {
     @Test
     @DisplayName("Deve converter EmpresaRequest em uma entidade Empresa")
     void deveConverterRequestParaEntity() {
-        // ARRANGE - Os dados brutos chegando da requisição
+
         EmpresaRequest request = new EmpresaRequest(
                 "Giga+",
                 "http://logo.com/gigas.png"
         );
 
-        // ACT - A mágica da conversão
+        // ACT
         Empresa entity = empresaMapper.toEntity(request);
 
-        // ASSERT - Garantindo que nada se perdeu na tradução
+        // ASSERT
         assertNotNull(entity);
         assertEquals(request.nome(), entity.getNome());
         assertEquals(request.urlLogo(), entity.getUrlLogo());
@@ -42,14 +41,14 @@ class EmpresaMapperTest {
     @Test
     @DisplayName("Deve converter entidade Empresa em EmpresaResponse")
     void deveConverterEntityParaResponse() {
-        // ARRANGE - A entidade completa vindo do banco de dados
+        // ARRANGE -
         Empresa empresa = new Empresa();
         empresa.setId(UUID.randomUUID());
         empresa.setNome("Ferraria de Valfenda");
         empresa.setUrlLogo("http://logo.com/valfenda.png");
-        // Se a sua Entidade tiver o campo dataCriacao, você pode setar aqui também!
 
-        // ACT - A conversão para mostrar ao mundo exterior
+
+        // ACT -
         EmpresaResponse response = empresaMapper.toResponse(empresa);
 
         // ASSERT
