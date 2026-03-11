@@ -31,7 +31,7 @@ public class TokenService {
                     .withClaim("perfil", usuario.getPerfil().name())
                     .withExpiresAt(gerarDataExpiracao())
                     .sign(algoritmo);
-        } catch (JWTCreationException exception) {
+        } catch (JWTCreationException | IllegalArgumentException exception) {
             throw new RuntimeException("Erro ao gerar token JWT", exception);
         }
     }
