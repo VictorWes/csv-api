@@ -1,4 +1,5 @@
-CSV - Controle Sobre Vendas 🚀
+CSV - Controle Sobre Vendas 
+
 O CSV é uma solução de Ponto de Venda (PDV) de código aberto, projetada para ser robusta, segura e, acima de tudo, acessível. Nossa missão é empoderar pequenos empreendedores com uma ferramenta de gestão profissional sem custos de licenciamento.
 
 🛠 Tecnologias Utilizadas
