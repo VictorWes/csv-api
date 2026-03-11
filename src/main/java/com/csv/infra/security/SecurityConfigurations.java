@@ -1,5 +1,6 @@
 package com.csv.infra.security;
 
+import com.csv.enums.PerfilEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,8 +36,9 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/empresas").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/empresas").hasAuthority(PerfilEnum.ADMIN.name())
+
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         .anyRequest().authenticated()
