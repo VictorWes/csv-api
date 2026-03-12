@@ -36,6 +36,8 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").hasAuthority(PerfilEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/clientes").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.OPERADOR.name(), PerfilEnum.GERENTE.name())
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/empresas").hasAuthority(PerfilEnum.ADMIN.name())
 
