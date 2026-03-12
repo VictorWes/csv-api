@@ -29,6 +29,15 @@ public class ClienteService {
 
     @Transactional
     public ClienteResponse criarCliente(ClienteRequest request) {
+
+        if (clienteRepository.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("Já existe um cliente cadastrado com este e-mail.");
+        }
+
+        if (clienteRepository.existsByTelefone(request.telefone())) {
+            throw new IllegalArgumentException("Já existe um cliente cadastrado com este telefone.");
+        }
+
         Empresa empresa = empresaRepository.findById(request.empresaId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Empresa não encontrada pelo ID informado."));
         Cliente cliente = clienteMapper.toEntity(request, empresa);

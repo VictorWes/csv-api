@@ -24,7 +24,7 @@ public class Cliente extends BaseEntity{
     private String email;
 
     @NotBlank(message = "O telefone é obrigatório")
-    @Column(length = 11)
+    @Column(unique = true)
     @Convert(converter = CryptoConverter.class)
     private String telefone;
 
