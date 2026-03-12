@@ -18,13 +18,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import java.time.LocalDate;
 import java.util.UUID;
-
 import org.springframework.http.MediaType;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-
-
 
 @AutoConfigureMockMvc
 public class ClienteControllerIT extends AbstractIntegrationTest {
