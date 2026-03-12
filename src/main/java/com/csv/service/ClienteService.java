@@ -10,7 +10,11 @@ import com.csv.repository.ClienteRepository;
 import com.csv.repository.EmpresaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class ClienteService {
@@ -32,5 +36,17 @@ public class ClienteService {
         Cliente clienteSalvo = clienteRepository.save(cliente);
 
         return clienteMapper.toResponse(clienteSalvo);
+    }
+
+    public Page<ClienteResponse> listarTodos(Pageable paginacao) {
+        return clienteRepository.findAll(paginacao)
+                .map(clienteMapper::toResponse);
+    }
+
+    public ClienteResponse buscarPorId(UUID id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado pelo ID informado."));
+
+        return clienteMapper.toResponse(cliente);
     }
 }
