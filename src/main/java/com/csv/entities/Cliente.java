@@ -34,4 +34,26 @@ public class Cliente extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id", nullable = false)
     private Empresa empresa;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    public void inativar() {
+        this.ativo = false;
+    }
+
+    public void atualizarInformacoes(String nome, String email, String telefone, LocalDate dataNascimento) {
+        if (nome != null && !nome.isBlank()) {
+            this.nome = nome;
+        }
+        if (email != null && !email.isBlank()) {
+            this.email = email;
+        }
+        if (telefone != null && !telefone.isBlank()) {
+            this.telefone = telefone;
+        }
+        if (dataNascimento != null) {
+            this.dataNascimento = dataNascimento;
+        }
+    }
 }

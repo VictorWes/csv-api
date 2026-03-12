@@ -1,5 +1,6 @@
 package com.csv.controller;
 
+import com.csv.controller.request.ClienteAtualizacaoRequest;
 import com.csv.controller.request.ClienteRequest;
 import com.csv.controller.response.ClienteResponse;
 import com.csv.service.ClienteService;
@@ -40,5 +41,17 @@ public class ClienteController {
     public ResponseEntity<ClienteResponse> detalhar(@PathVariable UUID id) {
         var response = clienteService.buscarPorId(id);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ClienteResponse> atualizar(@PathVariable UUID id, @RequestBody ClienteAtualizacaoRequest request) {
+        var response = clienteService.atualizar(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> inativar(@PathVariable UUID id) {
+        clienteService.inativar(id);
+        return ResponseEntity.noContent().build();
     }
 }

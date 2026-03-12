@@ -1,5 +1,6 @@
 package com.csv.service;
 
+import com.csv.controller.request.ClienteAtualizacaoRequest;
 import com.csv.controller.request.ClienteRequest;
 import com.csv.controller.response.ClienteResponse;
 import com.csv.entities.Cliente;
@@ -48,7 +49,7 @@ public class ClienteService {
     }
 
     public Page<ClienteResponse> listarTodos(Pageable paginacao) {
-        return clienteRepository.findAll(paginacao)
+        return clienteRepository.findAllByAtivoTrue(paginacao)
                 .map(clienteMapper::toResponse);
     }
 
@@ -58,4 +59,34 @@ public class ClienteService {
 
         return clienteMapper.toResponse(cliente);
     }
+
+    @Transactional
+    public ClienteResponse atualizar(UUID id, ClienteAtualizacaoRequest request) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado pelo ID informado."));
+
+        if (request.email() != null && !request.email().equals(cliente.getEmail()) && clienteRepository.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("Já existe um cliente cadastrado com este e-mail.");
+        }
+        if (request.telefone() != null && !request.telefone().equals(cliente.getTelefone()) && clienteRepository.existsByTelefone(request.telefone())) {
+            throw new IllegalArgumentException("Já existe um cliente cadastrado com este telefone.");
+        }
+
+        cliente.atualizarInformacoes(
+                request.nome(),
+                request.email(),
+                request.telefone(),
+                request.dataNascimento()
+        );
+
+        return clienteMapper.toResponse(cliente);
+    }
+
+    @Transactional
+    public void inativar(UUID id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado pelo ID informado."));
+        cliente.inativar();
+    }
+
 }
