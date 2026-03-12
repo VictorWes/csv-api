@@ -27,6 +27,9 @@ public class SecurityConfigurations {
     @Autowired
     SecurityFilter securityFilter;
 
+    @Autowired
+    private TratarErrosAutenticacao tratadorDeErrosAutenticacao;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -42,9 +45,9 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/empresas").hasAuthority(PerfilEnum.ADMIN.name())
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(tratadorDeErrosAutenticacao))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
