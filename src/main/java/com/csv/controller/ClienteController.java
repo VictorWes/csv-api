@@ -54,4 +54,10 @@ public class ClienteController {
         clienteService.inativar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/inativos")
+    public ResponseEntity<Page<ClienteResponse>> listarInativos(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
+        var page = clienteService.listarInativos(paginacao);
+        return ResponseEntity.ok(page);
+    }
 }

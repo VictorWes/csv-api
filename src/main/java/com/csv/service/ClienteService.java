@@ -89,4 +89,9 @@ public class ClienteService {
         cliente.inativar();
     }
 
+    public Page<ClienteResponse> listarInativos(Pageable paginacao) {
+        return clienteRepository.findAllByAtivoFalse(paginacao)
+                .map(clienteMapper::toResponse);
+    }
+
 }
