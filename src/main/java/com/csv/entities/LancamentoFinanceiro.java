@@ -3,6 +3,7 @@ package com.csv.entities;
 import com.csv.enums.TipoOperacaoEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ public class LancamentoFinanceiro extends BaseEntity {
     @Column(name = "tipo_operacao", nullable = false)
     private TipoOperacaoEnum tipoOperacao;
 
-    @NotBlank(message = "O valor é obrigatório")
+    @NotNull(message = "O valor é obrigatório")
     @Column(nullable = false)
     private BigDecimal valor;
 
