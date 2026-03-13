@@ -32,4 +32,28 @@ public class Produto extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id", nullable = false)
     private Empresa empresa;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    public void inativar() {
+        this.ativo = false;
+    }
+    public void atualizarInformacoes(String nome, BigDecimal preco, String segmento, String urlFoto, String codigoBarras) {
+        if (nome != null && !nome.isBlank()) {
+            this.nome = nome;
+        }
+        if (preco != null && preco.compareTo(BigDecimal.ZERO) >= 0) {
+            this.preco = preco;
+        }
+        if (segmento != null) {
+            this.segmento = segmento;
+        }
+        if (urlFoto != null) {
+            this.urlFoto = urlFoto;
+        }
+        if (codigoBarras != null) {
+            this.codigoBarras = codigoBarras;
+        }
+    }
 }
