@@ -25,4 +25,11 @@ public class ItemVenda extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "produto_id", nullable = false)
     private Produto produto;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    public void inativar() {
+        this.ativo = false;
+    }
 }

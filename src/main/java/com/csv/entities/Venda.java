@@ -32,4 +32,11 @@ public class Venda extends BaseEntity{
 
     @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemVenda> itens;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    public void inativar() {
+        this.ativo = false;
+    }
 }
