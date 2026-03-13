@@ -1,5 +1,6 @@
 package com.csv.service;
 
+import com.csv.controller.request.UsuarioAtualizacaoRequest;
 import com.csv.controller.request.UsuarioRequest;
 import com.csv.controller.response.UsuarioResponse;
 import com.csv.entities.Empresa;
@@ -17,8 +18,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,10 +52,14 @@ class UsuarioServiceTest {
     private UsuarioRequest request;
     private Empresa empresa;
     private UUID empresaId;
+    private UUID usuarioId;
+    private Usuario usuarioEntidade;
+    private UsuarioResponse responseEsperado;
 
     @BeforeEach
     void setup() {
         empresaId = UUID.randomUUID();
+        usuarioId = UUID.randomUUID();
         empresa = new Empresa();
         empresa.setId(empresaId);
 
@@ -59,6 +69,20 @@ class UsuarioServiceTest {
                 "senha123",
                 empresaId,
                 PerfilEnum.ADMIN
+        );
+
+        usuarioEntidade = new Usuario();
+        usuarioEntidade.setId(usuarioId);
+        usuarioEntidade.setNome(request.nome());
+        usuarioEntidade.setEmail(request.email());
+        usuarioEntidade.setPerfil(PerfilEnum.ADMIN);
+
+        responseEsperado = new UsuarioResponse(
+                usuarioId,
+                usuarioEntidade.getNome(),
+                usuarioEntidade.getEmail(),
+                usuarioEntidade.getPerfil().name(),
+                empresaId
         );
     }
 
@@ -143,5 +167,75 @@ class UsuarioServiceTest {
         // VERIFY
         verify(usuarioRepository, times(1)).save(usuarioMapeado);
         verify(passwordEncoder).encode(anyString());
+    }
+
+    @Test
+    @DisplayName("Deve buscar um usuário por ID com sucesso")
+    void deveBuscarUsuarioPorId() {
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuarioEntidade));
+        when(usuarioMapper.toResponse(usuarioEntidade)).thenReturn(responseEsperado);
+
+        UsuarioResponse response = usuarioService.buscarPorId(usuarioId);
+
+        assertNotNull(response);
+        assertEquals(usuarioId, response.id());
+    }
+
+    @Test
+    @DisplayName("Deve listar usuários ativos com paginação")
+    void deveListarUsuariosAtivos() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Usuario> pagina = new PageImpl<>(List.of(usuarioEntidade));
+
+        when(usuarioRepository.findAllByAtivoTrue(pageable)).thenReturn(pagina);
+        when(usuarioMapper.toResponse(usuarioEntidade)).thenReturn(responseEsperado);
+
+        Page<UsuarioResponse> resultado = usuarioService.listarTodos(pageable);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        verify(usuarioRepository, times(1)).findAllByAtivoTrue(pageable);
+    }
+
+
+    @Test
+    @DisplayName("Deve atualizar um usuário com sucesso sem alterar o email")
+    void deveAtualizarUsuarioSemConflitoDeEmail() {
+        UsuarioAtualizacaoRequest atualizacaoRequest = new UsuarioAtualizacaoRequest("Novo Nome", null, PerfilEnum.GERENTE);
+
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuarioEntidade));
+        when(usuarioMapper.toResponse(usuarioEntidade)).thenReturn(responseEsperado);
+
+        UsuarioResponse response = usuarioService.atualizar(usuarioId, atualizacaoRequest);
+
+        assertNotNull(response);
+        assertEquals("Novo Nome", usuarioEntidade.getNome());
+        assertEquals(PerfilEnum.GERENTE, usuarioEntidade.getPerfil());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao atualizar para um e-mail já usado por outro usuário")
+    void deveLancarErroAoAtualizarEmailJaUsado() {
+        UsuarioAtualizacaoRequest atualizacaoRequest = new UsuarioAtualizacaoRequest(null, "ocupado@email.com", null);
+
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuarioEntidade));
+        when(usuarioRepository.findByEmail("ocupado@email.com")).thenReturn(Optional.of(new Usuario()));
+
+        RegraNegocioException exception = assertThrows(RegraNegocioException.class, () -> {
+            usuarioService.atualizar(usuarioId, atualizacaoRequest);
+        });
+
+        assertEquals("Já existe um usuário cadastrado com este e-mail.", exception.getMessage());
+    }
+
+
+    @Test
+    @DisplayName("Deve inativar um usuário com sucesso (Soft Delete)")
+    void deveInativarUsuario() {
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuarioEntidade));
+
+        usuarioService.inativar(usuarioId);
+        verify(usuarioRepository, times(1)).findById(usuarioId);
+
     }
 }
