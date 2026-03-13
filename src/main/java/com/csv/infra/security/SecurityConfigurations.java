@@ -37,17 +37,28 @@ public class SecurityConfigurations {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").hasAuthority(PerfilEnum.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/clientes").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.OPERADOR.name(), PerfilEnum.GERENTE.name())
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/empresas").hasAuthority(PerfilEnum.ADMIN.name())
+
                         .requestMatchers(HttpMethod.DELETE, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.DELETE, "/empresas/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.GERENTE.name())
+
                         .requestMatchers(HttpMethod.PATCH, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.PATCH, "/empresas/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.GERENTE.name())
+
                         .requestMatchers(HttpMethod.GET, "/clientes/inativos").hasAuthority(PerfilEnum.ADMIN.name())
+
+
+
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )

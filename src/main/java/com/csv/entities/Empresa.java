@@ -17,4 +17,20 @@ public class Empresa extends BaseEntity{
 
     @Column(name = "url_logo")
     private String urlLogo;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    public void inativar() {
+        this.ativo = false;
+    }
+
+    public void atualizarInformacoes(String nome, String urlLogo) {
+        if (nome != null && !nome.isBlank()) {
+            this.nome = nome;
+        }
+        if (urlLogo != null && !urlLogo.isBlank()) {
+            this.urlLogo = urlLogo;
+        }
+    }
 }
