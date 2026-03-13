@@ -36,6 +36,30 @@ public class Usuario extends BaseEntity implements UserDetails {
     @Column(nullable = false, length = 20)
     private PerfilEnum perfil;
 
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    @Override
+    public boolean isEnabled() {
+        return this.ativo;
+    }
+
+    public void inativar() {
+        this.ativo = false;
+    }
+
+    public void atualizarInformacoes(String nome, String email, PerfilEnum perfil) {
+        if (nome != null && !nome.isBlank()) {
+            this.nome = nome;
+        }
+        if (email != null && !email.isBlank()) {
+            this.email = email;
+        }
+        if (perfil != null) {
+            this.perfil = perfil;
+        }
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.perfil.name()));
@@ -63,11 +87,6 @@ public class Usuario extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
         return true;
     }
 }

@@ -49,10 +49,14 @@ public class SecurityConfigurations {
                                 PerfilEnum.GERENTE.name())
                         .requestMatchers(HttpMethod.DELETE, "/empresas/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.DELETE, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.GERENTE.name())
 
                         .requestMatchers(HttpMethod.PATCH, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
                         .requestMatchers(HttpMethod.PATCH, "/empresas/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.PATCH, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
 
                         .requestMatchers(HttpMethod.GET, "/clientes/inativos").hasAuthority(PerfilEnum.ADMIN.name())
