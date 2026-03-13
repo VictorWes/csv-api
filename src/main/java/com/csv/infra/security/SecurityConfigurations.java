@@ -44,6 +44,8 @@ public class SecurityConfigurations {
                                 PerfilEnum.OPERADOR.name(), PerfilEnum.GERENTE.name())
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/empresas").hasAuthority(PerfilEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/produtos").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.GERENTE.name())
 
                         .requestMatchers(HttpMethod.DELETE, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
