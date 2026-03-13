@@ -1,7 +1,9 @@
 package com.csv.controller;
 
 import com.csv.AbstractIntegrationTest;
+import com.csv.controller.request.ClienteAtualizacaoRequest;
 import com.csv.controller.request.ClienteRequest;
+import com.csv.entities.Cliente;
 import com.csv.entities.Empresa;
 import com.csv.repository.ClienteRepository;
 import com.csv.repository.EmpresaRepository;
@@ -15,10 +17,12 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import java.time.LocalDate;
 import java.util.UUID;
 import org.springframework.http.MediaType;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -58,6 +62,20 @@ public class ClienteControllerIT extends AbstractIntegrationTest {
     void tearDown() {
         clienteRepository.deleteAll();
         empresaRepository.deleteAll();
+    }
+
+    // --- Helper Method para popular o Testcontainer ---
+    private Cliente criarClienteNoBanco(boolean ativo, String email, String telefone) {
+        Cliente cliente = new Cliente();
+        cliente.setNome("Cliente Teste");
+        cliente.setEmail(email);
+        cliente.setTelefone(telefone);
+        cliente.setDataNascimento(dataNascimentoValida);
+        cliente.setEmpresa(empresaSalva);
+        if (!ativo) {
+            cliente.inativar();
+        }
+        return clienteRepository.save(cliente);
     }
 
     @Test
@@ -129,5 +147,54 @@ public class ClienteControllerIT extends AbstractIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payloadJson))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve listar apenas clientes ativos (200 OK)")
+    @WithMockUser(authorities = "OPERADOR")
+    void deveListarClientesAtivos() throws Exception {
+        criarClienteNoBanco(true, "ativo@email.com", "11900000001");
+        criarClienteNoBanco(false, "inativo@email.com", "11900000002");
+
+        mockMvc.perform(get("/clientes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].email").value("ativo@email.com"));
+    }
+
+    @Test
+    @DisplayName("Deve listar clientes inativos quando usuário for ADMIN (200 OK)")
+    @WithMockUser(authorities = "ADMIN")
+    void deveListarClientesInativosAdmin() throws Exception {
+        criarClienteNoBanco(true, "ativo@email.com", "11900000001");
+        criarClienteNoBanco(false, "inativo@email.com", "11900000002");
+
+        mockMvc.perform(get("/clientes/inativos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].email").value("inativo@email.com"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 403 Forbidden ao tentar listar inativos com perfil OPERADOR")
+    @WithMockUser(authorities = "OPERADOR")
+    void deveBloquearListagemDeInativosParaOperador() throws Exception {
+        mockMvc.perform(get("/clientes/inativos"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Deve atualizar telefone do cliente parcialmente (200 OK)")
+    @WithMockUser(authorities = "ADMIN")
+    void deveAtualizarClienteComSucesso() throws Exception {
+        Cliente cliente = criarClienteNoBanco(true, "atualiza@email.com", "11900000001");
+        ClienteAtualizacaoRequest request = new ClienteAtualizacaoRequest(null, null, "11988888888", null);
+
+        mockMvc.perform(patch("/clientes/{id}", cliente.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.telefone").value("11988888888"))
+                .andExpect(jsonPath("$.nome").value(cliente.getNome()));
     }
 }
