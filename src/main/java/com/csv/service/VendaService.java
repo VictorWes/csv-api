@@ -22,7 +22,7 @@ public class VendaService {
     @Autowired private EmpresaRepository empresaRepository;
     @Autowired private FormaPagamentoRepository formaPagamentoRepository;
     @Autowired private ClienteRepository clienteRepository;
-    @Autowired private VendedorRepository vendedorRepository; // Assumindo que você tem esse
+    @Autowired private VendedorRepository vendedorRepository;
     @Autowired private VendaMapper vendaMapper;
     @Autowired private LancamentoFinanceiroService lancamentoFinanceiroService;
 
@@ -54,7 +54,6 @@ public class VendaService {
     public VendaResponse buscarPorId(UUID id) {
         Venda venda = vendaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Venda não encontrada."));
-        // Recalcula dinamicamente para garantir que o response sempre traga o total real dos itens!
         venda.recalcularValorTotal();
         return vendaMapper.toResponse(venda);
     }
