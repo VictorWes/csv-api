@@ -29,4 +29,16 @@ public class Vendedor extends BaseEntity {
     public void inativar() {
         this.ativo = false;
     }
+
+    public void atualizarDados(String nome, String cargo, LocalDate dataNascimento) {
+        if (nome != null && !nome.isBlank()) {
+            this.nome = nome;
+        }
+        if (cargo != null) {
+            this.cargo = cargo;
+        }
+        if (dataNascimento != null) {
+            this.dataNascimento = dataNascimento;
+        }
+    }
 }

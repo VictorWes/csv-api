@@ -35,7 +35,7 @@ public class SecurityConfigurations {
 
         String[] rotasPostAdmin = {"/usuarios", "/empresas"};
 
-        String[] rotasPostGerencia = {"/produtos", "/formas-pagamento", "/lancamentos"};
+        String[] rotasPostGerencia = {"/produtos", "/formas-pagamento", "/lancamentos", "/vendedores"};
 
         String[] rotasPostOperacao = {"/clientes", "/vendas"};
 
@@ -43,11 +43,11 @@ public class SecurityConfigurations {
 
         String[] rotasDeleteGerencia = {
                 "/clientes/{id}", "/empresas/{id}", "/usuarios/{id}",
-                "/produtos/{id}", "/formas-pagamento/{id}", "/lancamentos/{id}", "/vendas/{id}"
+                "/produtos/{id}", "/formas-pagamento/{id}", "/lancamentos/{id}", "/vendas/{id}", "/vendedores/{id}"
         };
 
         String[] rotasPatchGerencia = {
-                "/empresas/{id}", "/usuarios/{id}", "/formas-pagamento/{id}", "/lancamentos/{id}"
+                "/empresas/{id}", "/usuarios/{id}", "/formas-pagamento/{id}", "/lancamentos/{id}", "/vendedores/{id}"
         };
 
         String[] rotasGetGerencia = {
