@@ -24,6 +24,7 @@ public class VendaService {
     @Autowired private ClienteRepository clienteRepository;
     @Autowired private VendedorRepository vendedorRepository; // Assumindo que você tem esse
     @Autowired private VendaMapper vendaMapper;
+    @Autowired private LancamentoFinanceiroService lancamentoFinanceiroService;
 
     @Transactional
     public VendaResponse abrirVenda(VendaRequest request) {
@@ -81,5 +82,29 @@ public class VendaService {
         Venda venda = vendaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Venda não encontrada."));
         venda.inativar();
+    }
+
+    @Transactional
+    public VendaResponse finalizarVenda(UUID vendaId, UUID contaId) {
+        Venda venda = vendaRepository.findById(vendaId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Venda não encontrada."));
+
+        venda.recalcularValorTotal();
+        if (venda.getValorTotal().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Não é possível finalizar uma venda com valor zero. Adicione itens ao carrinho.");
+        }
+
+        com.csv.controller.request.LancamentoFinanceiroRequest lancamentoRequest =
+                new com.csv.controller.request.LancamentoFinanceiroRequest(
+                        contaId,
+                        com.csv.enums.TipoOperacaoEnum.ENTRADA,
+                        venda.getValorTotal(),
+                        "Receita de Venda PDV",
+                        venda.getId()
+                );
+
+        lancamentoFinanceiroService.criar(lancamentoRequest);
+        venda = vendaRepository.save(venda);
+        return vendaMapper.toResponse(venda);
     }
 }

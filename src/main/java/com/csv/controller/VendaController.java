@@ -51,4 +51,12 @@ public class VendaController {
         vendaService.cancelarVenda(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/fechar")
+    public ResponseEntity<VendaResponse> finalizar(
+            @PathVariable UUID id,
+            @RequestParam UUID contaId) {
+
+        return ResponseEntity.ok(vendaService.finalizarVenda(id, contaId));
+    }
 }
