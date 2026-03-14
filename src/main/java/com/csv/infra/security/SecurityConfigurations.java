@@ -32,6 +32,28 @@ public class SecurityConfigurations {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+
+        String[] rotasPostAdmin = {"/usuarios", "/empresas"};
+
+        String[] rotasPostGerencia = {"/produtos", "/formas-pagamento", "/lancamentos"};
+
+        String[] rotasPostOperacao = {"/clientes", "/vendas"};
+
+        String[] rotasPatchOperacao = {"/clientes/{id}", "/vendas/{id}"};
+
+        String[] rotasDeleteGerencia = {
+                "/clientes/{id}", "/empresas/{id}", "/usuarios/{id}",
+                "/produtos/{id}", "/formas-pagamento/{id}", "/lancamentos/{id}", "/vendas/{id}"
+        };
+
+        String[] rotasPatchGerencia = {
+                "/empresas/{id}", "/usuarios/{id}", "/formas-pagamento/{id}", "/lancamentos/{id}"
+        };
+
+        String[] rotasGetGerencia = {
+                "/formas-pagamento/inativas", "/lancamentos/conta/{contaId}", "/lancamentos/{id}", "/vendas/empresa/{empresaId}"
+        };
+
         return httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
@@ -39,56 +61,24 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(authorize -> authorize
 
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios").hasAuthority(PerfilEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/clientes").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.OPERADOR.name(), PerfilEnum.GERENTE.name())
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/empresas").hasAuthority(PerfilEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/produtos").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.POST, "/formas-pagamento").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.POST, "/lancamentos").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-
-                        .requestMatchers(HttpMethod.DELETE, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/empresas/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/usuarios/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/produtos/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/formas-pagamento/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/lancamentos/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-
-                        .requestMatchers(HttpMethod.PATCH, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.PATCH, "/empresas/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.PATCH, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.PATCH, "/usuarios/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.PATCH, "/formas-pagamento/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.PATCH, "/lancamentos/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-
-                        .requestMatchers(HttpMethod.GET, "/clientes/inativos").hasAuthority(PerfilEnum.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/formas-pagamento/inativas").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.GET, "/lancamentos/{contaId}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.GET, "/lancamentos/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
-                                PerfilEnum.GERENTE.name())
-
-
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 2. Regras de ADMIN (Acesso Exclusivo)
+                        .requestMatchers(HttpMethod.POST, rotasPostAdmin).hasAuthority(PerfilEnum.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/clientes/inativos").hasAuthority(PerfilEnum.ADMIN.name())
+
+                        // 3. Regras de GERÊNCIA (Admin e Gerente)
+                        .requestMatchers(HttpMethod.POST, rotasPostGerencia).hasAnyAuthority(PerfilEnum.ADMIN.name(), PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.DELETE, rotasDeleteGerencia).hasAnyAuthority(PerfilEnum.ADMIN.name(), PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.PATCH, rotasPatchGerencia).hasAnyAuthority(PerfilEnum.ADMIN.name(), PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.GET, rotasGetGerencia).hasAnyAuthority(PerfilEnum.ADMIN.name(), PerfilEnum.GERENTE.name())
+
+                        // 4. Regras de OPERAÇÃO (Admin, Gerente e Operador)
+                        .requestMatchers(HttpMethod.POST, rotasPostOperacao).hasAnyAuthority(PerfilEnum.ADMIN.name(), PerfilEnum.GERENTE.name(), PerfilEnum.OPERADOR.name())
+                        .requestMatchers(HttpMethod.PATCH, rotasPatchOperacao).hasAnyAuthority(PerfilEnum.ADMIN.name(), PerfilEnum.GERENTE.name(), PerfilEnum.OPERADOR.name())
+                        .requestMatchers(HttpMethod.GET, "/vendas/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(), PerfilEnum.GERENTE.name(), PerfilEnum.OPERADOR.name())
+
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(tratadorDeErrosAutenticacao))

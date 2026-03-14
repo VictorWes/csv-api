@@ -39,4 +39,23 @@ public class Venda extends BaseEntity{
     public void inativar() {
         this.ativo = false;
     }
+
+    public void atualizarDados(Cliente cliente, Vendedor vendedor, FormaPagamento formaPagamento) {
+        this.cliente = cliente;
+        this.vendedor = vendedor;
+        if (formaPagamento != null) {
+            this.formaPagamento = formaPagamento;
+        }
+    }
+
+    public void recalcularValorTotal() {
+        if (this.itens != null && !this.itens.isEmpty()) {
+            this.valorTotal = this.itens.stream()
+                    .filter(ItemVenda::getAtivo)
+                    .map(ItemVenda::getSubtotal)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        } else {
+            this.valorTotal = BigDecimal.ZERO;
+        }
+    }
 }
