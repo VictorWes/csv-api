@@ -32,4 +32,17 @@ public class ItemVenda extends BaseEntity {
     public void inativar() {
         this.ativo = false;
     }
+
+    public void atualizarQuantidade(Integer novaQuantidade) {
+        if (novaQuantidade != null && novaQuantidade > 0) {
+            this.quantidade = novaQuantidade;
+        }
+    }
+
+    public BigDecimal getSubtotal() {
+        if (this.precoUnitario == null || this.quantidade == null) {
+            return BigDecimal.ZERO;
+        }
+        return this.precoUnitario.multiply(BigDecimal.valueOf(this.quantidade));
+    }
 }
