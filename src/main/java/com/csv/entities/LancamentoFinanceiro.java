@@ -38,4 +38,10 @@ public class LancamentoFinanceiro extends BaseEntity {
     public void inativar() {
         this.ativo = false;
     }
+
+    public void atualizarDescricao(String descricao) {
+        if (descricao != null && !descricao.isBlank()) {
+            this.descricao = descricao;
+        }
+    }
 }
