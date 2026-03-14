@@ -46,6 +46,8 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/empresas").hasAuthority(PerfilEnum.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/produtos").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.POST, "/formas-pagamento").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.GERENTE.name())
 
                         .requestMatchers(HttpMethod.DELETE, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
@@ -57,6 +59,8 @@ public class SecurityConfigurations {
                                 PerfilEnum.GERENTE.name())
                         .requestMatchers(HttpMethod.DELETE, "/produtos/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
+                        .requestMatchers(HttpMethod.DELETE, "/formas-pagamento/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.GERENTE.name())
 
                         .requestMatchers(HttpMethod.PATCH, "/clientes/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
@@ -66,11 +70,12 @@ public class SecurityConfigurations {
                                 PerfilEnum.GERENTE.name())
                         .requestMatchers(HttpMethod.PATCH, "/usuarios/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/produtos/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                        .requestMatchers(HttpMethod.PATCH, "/formas-pagamento/{id}").hasAnyAuthority(PerfilEnum.ADMIN.name(),
                                 PerfilEnum.GERENTE.name())
 
                         .requestMatchers(HttpMethod.GET, "/clientes/inativos").hasAuthority(PerfilEnum.ADMIN.name())
-
+                        .requestMatchers(HttpMethod.GET, "/formas-pagamento/inativas").hasAnyAuthority(PerfilEnum.ADMIN.name(),
+                                PerfilEnum.GERENTE.name())
 
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

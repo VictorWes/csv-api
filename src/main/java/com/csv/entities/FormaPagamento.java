@@ -27,4 +27,13 @@ public class FormaPagamento extends BaseEntity {
     public void inativar() {
         this.ativo = false;
     }
+
+    public void atualizarInformacoes(String nome, TipoBasePagamentoEnum tipoBase) {
+        if (nome != null && !nome.isBlank()) {
+            this.nome = nome;
+        }
+        if (tipoBase != null) {
+            this.tipoBase = tipoBase;
+        }
+    }
 }
